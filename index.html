@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>GEOG 777 - Project #1</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
+  <!-- Load Leaflet from CDN-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+    integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+    crossorigin=""></script>  
+
+  <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@2.4.1/dist/esri-leaflet.js"
+  integrity="sha512-xY2smLIHKirD03vHKDJ2u4pqeHA7OQZZ27EjtqmuhDguxiUvdsOuXMwkg16PQrm9cgTmXtoxA6kwr8KBy3cdcw=="
+  crossorigin=""></script>
+    
+<!--
+    <script src="https://unpkg.com/esri-leaflet@2.3.0/dist/esri-leaflet.js"
+    integrity="sha512-1tScwpjXwwnm6tTva0l0/ZgM3rYNbdyMj5q6RSQMbNX6EUMhYDE3pMRGZaT41zHEvLoWEK7qFEJmZDOoDMU7/Q=="
+    crossorigin=""></script>
+-->
+
+  <!-- Load Turf.js from CDN -->
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+
+    <!-- Load Simple Statistics from CDN-->
+    <script src='https://unpkg.com/simple-statistics@7.0.2/dist/simple-statistics.min.js'></script>
+
+    <!-- jQuery CDN-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- blockUI.js from CDN-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"></script>
+
+    <!-- Load custom stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    
+    <div id = 'banner'>
+        Finding the Possible Link between Nitrate Concentrations and Cancer Risk in Wisconsin
+        <br>
+        <i></i>
+        </div>
+    
+<!--
+    <div id = 'panel'>
+            <p>This web mapping application illustrates the monthly customers at each of the 33 stations on the CTA Red Line.
+            </p>
+            <br>
+            <p>The Chicago Transit Authority (CTA) opened the train line running between the North/Clybourn and Roosevelt stations on October 17, 1943.  Over the decades the line was increased to take travelers and commuters from the northside to the southside.
+            </p>
+            <br>
+            <p>The CTA adopted color-coded nomenclature for the rail routes in 1993, and this line has since forth been called the "Red Line".  The Red traverses many different neighborhoods, from the most affluent to some of the most disadvantaged.  Millions of people ride the train annually, including sports fans to Cubs, White Sox and Bears games.</p>
+        </div>
+-->
+    
+    <div id="map"></div>
+    <div id="input-pane" class="leaflet-bar">
+      <div>
+<!--
+        <h4>High nitrate concentrations in drinking water are a health hazard. Recently a possible cancer risk in adults from nitrate (and nitrite) has emerged, but the magnitude of the risk is unknown.</h4>
+        <label>This application allows users to explore the relationship between nitrate and cancer through spatial analysis.<br><br> </label>
+-->
+<!--
+        <p>Data on cancers are collected by cataloging the location of all cancer occurrences over a ten-year period and are summarized to census tracts by being devided by population. We also assembled a database of nitrate levels in a group of test wells throughout the county</p>
+        <p>To explore the relationship between nitrate level and cancer rate, first choose a distance exponent k and cell value for interpolation. Click button <strong>Interpolate</strong> to generate the nitrate surface level. Click button <strong>Calculate</strong> to analyzing the relationship and explore the estimation error.</p>
+-->
+      </div>
+      <div>
+        <p style="font-size:24px"><strong><u>Interpolation</u></strong></p>
+        <label style="font-size:14px">K Value: &nbsp;</label><input id="kvalue" type="number" value=1 min=1 max=50 /> &nbsp;<br>
+        <label style="font-size:14px">Cell Size (kilometers): </label><input id="cellsize" type="number" value=10 min=1 max=50 /> &nbsp;<br><br>
+        <button id="interpolateBtn">Calculate Interpolation</button> <br><br>
+        <!-- <label>remove </"label><button onclick="remove()">remove</button> <br> -->
+        <!-- <label>2. </label><button onclick="aggregationCal()">Aggregation</button><br> -->
+        <p style="font-size:24px"><strong><u>Linear Regression</u></strong></p>
+<!--        <label>Linear regression and map error: &nbsp;</label>-->
+        <button id="regressionBtn">Calculate Regression</button><br><br>
+<!--
+        <label>slope: </label><label id='slope'></label>&nbsp;&nbsp;&nbsp;&nbsp;
+        <label>intercept: </label><label id='intercept'></label>
+-->
+    </div>
+        
+         <button type="submit"  onClick="refreshPage()">Reset</button>
+    </div>
+    
+    <div id="bottom">
+        <p>This project analyzes the possible correlation of nitrate concentrations with known cancer rates. Two datasets are provided: a point layer with nitrate concentrations from 1,866 well tests and a polygon layer with cancer rates for 1,401 census tracts in Wisconsin.<br></p>
+        <p><strong>Interpolation</strong> - this application uses Inverse Distance Weighting (IDW) for the spatial interpolation.  This method uses the sample values from the well tests, which are random and not associated with mapping cancer rates, to calculate nitrate concentrations across the entire state.  The distance decay coefficient, k, can be changed from 1 to 50.<br></p>
+        <p><strong>Regression</strong> - this application uses Linear Regression to determine how well the nitrate concentrations and cancer rates relate to one another.<br></p>
+        <p>Created by Jonathan Hansel using Esri, Leaflet, Simple Statistics, and Turf JavaScript.</p>
+        
+    </div>
+    
+    <script src="main.js"></script>
+    
+    <script>
+        function refreshPage(){
+        window.location.reload();
+        } 
+    </script>
+    
+</body>
+</html>
